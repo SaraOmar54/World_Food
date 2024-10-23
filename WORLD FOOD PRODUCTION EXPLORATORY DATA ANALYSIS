@@ -1,0 +1,138 @@
+# WORLD FOOD PRODUCTION EXPLORATORY DATA ANALYSIS
+
+## ABOUT THE AUTHOR
+Hi there! I'm SARA MASSOUD, an aspiring data analyst. I am excited to dive into the world of data, exploring new concepts, and enhancing my analytical skills. Join me on this journey as we uncover insights and learn together!
+
+"Learning is a journey best taken with others. Together, we can achieve more."
+
+---
+
+### LET'S BEGIN! 🙂
+
+## About The Dataset
+| Food Item       | Description                                           |
+|-----------------|-------------------------------------------------------|
+| Maize           | Total production of maize in tonnes                   |
+| Rice            | Total production of rice in tonnes                    |
+| Wheat           | Total production of wheat in tonnes                   |
+| Coffee Green    | Total production of green coffee in tonnes            |
+| Bananas         | Total production of bananas in tonnes                 |
+| ...             | ...                                                   |
+
+### Importing the Libraries
+```python
+# Import necessary libraries
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import plotly.express as px
+
+# Suppress any future warnings for cleaner output
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+```
+
+### Loading the Dataset
+```python
+# Load the dataset
+df = pd.read_csv("path/to/world_food_production.csv")
+
+# Display the first few rows
+df.head()
+```
+
+### Checking for Missing Values
+```python
+# Check for null values
+df.isnull().sum()
+```
+
+### Data Overview
+```python
+# Display dataset information
+df.info()
+
+# Rename columns for clarity
+df.rename(columns={'Entity': 'Country_Name'}, inplace=True)
+
+# Display all columns
+print(df.columns)
+
+# Check unique values in the Country column
+df['Country_Name'].unique()
+```
+
+### Data Cleaning
+```python
+# Remove unwanted text patterns and clean up country names
+df['Country_Name'] = df['Country_Name'].str.replace(r'[\(\)\[\]]|\([^0-9]*\d+[^\)]*\)|-|27|\'', '', regex=True)
+
+# Remove non-country entries
+non_countries = [
+    'Highincome countries', 'Least Developed Countries FAO',
+    'Low Income Food Deficit Countries FAO', 'Net Food Importing Developing Countries FAO',
+    'Land Locked Developing Countries FAO', 'Uppermiddleincome countries'
+]
+df = df[~df['Country_Name'].isin(non_countries)]
+
+# Verify the cleaning
+df['Country_Name'].unique()
+```
+
+### Handling Duplicate Entries
+```python
+# Check for duplicates
+duplicates = df[df.duplicated()]
+print("Duplicate Rows:")
+print(duplicates)
+```
+
+### Mapping Countries to Regions
+```python
+# Define mapping of countries to regions
+region_mapping = {
+    # Example mappings
+    'Africa': ['Nigeria', 'South Africa', ...],
+    'Asia': ['China', 'India', ...],
+    ...
+}
+
+# Create a new column 'Region' based on mapping
+df['Region'] = df['Country_Name'].map({country: region for region, countries in region_mapping.items() for country in countries})
+
+# Show updated DataFrame
+df.head()
+```
+
+### Exploratory Data Analysis
+#### 1. Line Chart: Maize Production Over Time
+```python
+fig_maize = px.line(df, x='Year', y='Maize Production (tonnes)', color='Country_Name', title='Maize Production Over Time')
+fig_maize.show()
+```
+
+#### 2. Bar Chart: Rice Production in 2020
+```python
+fig_rice = px.bar(df[df['Year'] == 2020], x='Country_Name', y='Rice Production (tonnes)', title='Rice Production in 2020')
+fig_rice.show()
+```
+
+#### 3. Scatter Plot: Wheat vs. Yams Production
+```python
+fig_scatter = px.scatter(df, x='Wheat Production (tonnes)', y='Yams Production (tonnes)', color='Country_Name', title='Wheat vs. Yams Production')
+fig_scatter.show()
+```
+
+#### 4. Animated Scatter: Maize vs. Rice Production Over Time by Region
+```python
+fig_scatter_region = px.scatter(
+    df, x='Maize Production (tonnes)', y='Rice Production (tonnes)',
+    color='Region', animation_frame='Year', size='Maize Production (tonnes)',
+    size_max=50, title='Animated Scatter Plot of Maize vs. Rice Production Over Time by Region'
+)
+fig_scatter_region.show()
+```
+
+### Conclusion
+Thank you for exploring this dataset with me! If you enjoyed this project, please leave feedback, and stay tuned for more updates. 🌟
